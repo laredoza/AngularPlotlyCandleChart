@@ -1,13 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { TradeViewService } from './trade-view.service';
 import * as moment from 'moment';
-
+import { PlotlyModule } from 'angular-plotly.js';
 @Component({
   selector: 'app-trade-view',
   templateUrl: './trade-view.component.html',
   styleUrls: ['./trade-view.component.scss']
 })
-export class TradeViewComponent implements OnInit {
+export class TradeViewComponent implements OnInit, AfterViewInit {
+  @ViewChild('chart', {static: true, read: ElementRef}) chart: ElementRef<PlotlyModule>;
+  
+
+  ngAfterViewInit(): void {
+    debugger;
+    PlotlyModule.plotlyjs.layout.template1 = 'plotly_dark';
+  }
 
   startDate = moment("2019-01-01", "YYYY-MM-DD HH:mm:ss");
   endDate = moment("2020-02-01", "YYYY-MM-DD HH:mm:ss");
@@ -29,6 +36,7 @@ export class TradeViewComponent implements OnInit {
       }
     ],
     layout: {
+      template: "plotly_dark",
       dragmode: "zoom",
       margin: {
         r: 10,

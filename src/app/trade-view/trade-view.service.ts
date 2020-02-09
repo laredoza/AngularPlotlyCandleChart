@@ -12,10 +12,6 @@ export class TradeViewService {
   private baseUrl =  'https://poloniex.com';
   constructor(private httpClient: HttpClient) { }
 
-  getInitialMarketStatus() {
-    return this.httpClient.get<any[]>(`${this.baseUrl}/public?command=returnChartData&currencyPair=BTC_XMR&start=1546300800&end=1546646400&period=14400`);
-  }
-
   returnTrades(startDateUnix:number, endDateUnix: number, period: number): Observable<PoloniexData[]> {
     const headers = new HttpHeaders({
     });
