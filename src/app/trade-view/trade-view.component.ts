@@ -12,8 +12,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
   
 
   ngAfterViewInit(): void {
-    debugger;
-    PlotlyModule.plotlyjs.layout.template1 = 'plotly_dark';
+    // PlotlyModule.plotlyjs.layout.template1 = 'plotly_dark';
   }
 
   startDate = moment("2019-01-01", "YYYY-MM-DD HH:mm:ss");
