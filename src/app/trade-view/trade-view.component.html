@@ -1,3 +1,12 @@
+<!-- <div style="height: 100%;"> -->
 <p>Polonomix Trade</p>
-<plotly-plot [data]="candleGraph.data" [layout]="candleGraph.layout" [config]="candleGraph.config" (buttonClicked)="onClick(data)" #chart></plotly-plot>
+<plotly-plot 
+    [data]="candleGraph.data" 
+    [layout]="candleGraph.layout" 
+    [config]="candleGraph.config" 
+    (buttonClicked)="onClick(data)" 
+    #chart 
+    [useResizeHandler]="true" 
+    [style]="{position: 'relative', width: '100%', height: '100%'}"></plotly-plot>
 
+<!-- </div> -->

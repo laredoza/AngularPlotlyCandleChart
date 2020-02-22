@@ -8,10 +8,13 @@ import {
 import { TradeViewService } from "./trade-view.service";
 import * as moment from "moment";
 import { PlotlyModule } from "angular-plotly.js";
-import { EMA, MACD } from "technicalindicators";
+import { EMA, MACD, CCI } from "technicalindicators";
 import { EmaResult } from "./models/ema-result";
 import { MACDInput } from 'technicalindicators/declarations/moving_averages/MACD';
 import { MACDResult } from './models/macd-result';
+import { CCIInput } from 'technicalindicators/declarations/oscillators/CCI';
+import { CCIResult } from './models/cci-result';
+
 @Component({
   selector: "app-trade-view",
   templateUrl: "./trade-view.component.html",
@@ -98,27 +101,61 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         name: "Signal",
         xaxis: "x",
         yaxis: "y2"
+      },
+      {
+        x: [],
+        y: [],
+        legendgroup: 'CCI',
+        showlegend: true,
+        type: "lines",
+        name: "CCI",
+        xaxis: "x",
+        yaxis: "y3"
+      },
+      {
+        x: [],
+        y: [],
+        legendgroup: 'CCI',
+        showlegend: false,
+        type: "lines",
+        name: "CCI100",
+        xaxis: "x",
+        yaxis: "y3"
+      },
+      {
+        x: [],
+        y: [],
+        legendgroup: 'CCI',
+        showlegend: false,
+        type: "lines",
+        name: "CCI-100",
+        xaxis: "x",
+        yaxis: "y3"
       }
     ],
     layout: {
       grid: {
-        rows: 2,
+        rows: 3,
         columns: 1,
-        subplots: [["xy"], ["xy2"]],
+        subplots: [["xy"], ["xy2"], ["xy3"]],
         roworder: "top to bottom"
       },
       autosize: true,
-      // width: 1500,
-      // height: 2000,
+      // width: 1800,
+      // height: 900,
       dragmode: "pan",
       margin: {
         r: 10,
-        t: 25,
+        t: 0,
         b: 40,
         l: 60
       },
       showlegend: true,
-      legend: {"orientation": "h"},
+      legend: {
+        "orientation": "h",
+        x: 0.4, 
+        y: 1.2
+      },
       xaxis: {
         autorange: true,
         title: "Date",
@@ -174,9 +211,15 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
       },
       yaxis: {
         autorange: true,
-        domain: [1, 1],
-        range: [2000, 3000],
+        domain: [0.4, 1],
+        range: [2000, 20000],
         type: "linear"
+      },
+      yaxis2: {
+        domain: [0.2, 0.3] 
+      },
+      yaxis3: {
+        domain: [0, 0.1] 
       },
       annotations: [
         {
@@ -228,7 +271,6 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         .utc()
         .format("YYYY-MM-DD HH:mm:ss");
       this.candleGraph.data[0].x.push(date);
-
       this.candleGraph.data[0].close.push(data.close);
       this.candleGraph.data[0].high.push(data.high);
       this.candleGraph.data[0].low.push(data.low);
@@ -280,6 +322,21 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
 
     this.candleGraph.data[6].x = macdResult.x;
     this.candleGraph.data[6].y = macdResult.signal;
+
+    let cciResult = this.addCCI({
+      high:this.candleGraph.data[0].high, 
+      low: this.candleGraph.data[0].low, 
+      close: this.candleGraph.data[0].close
+      , period:21}, this.candleGraph.data[0].x)
+
+    this.candleGraph.data[7].x = cciResult.x;
+    this.candleGraph.data[7].y = cciResult.y;
+
+    this.candleGraph.data[8].x = [this.candleGraph.data[0].x[0], this.candleGraph.data[0].x[this.candleGraph.data[0].x.length - 1]];
+    this.candleGraph.data[8].y = [100,100]; 
+
+    this.candleGraph.data[9].x = [this.candleGraph.data[0].x[0], this.candleGraph.data[0].x[this.candleGraph.data[0].x.length - 1]];
+    this.candleGraph.data[9].y = [-100,-100]; 
   }
 
   private addEmaChart(
@@ -304,13 +361,13 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
   }
 
   private addMACDChart(
-    settings: MACDInput,
+    input: MACDInput,
     xData: undefined[]
   ) : MACDResult
   {
     let result = new MACDResult();
 
-    var macd = new MACD(settings);
+    var macd = new MACD(input);
     var macdResults = macd.getResult();
 
     macdResults.forEach(macdResult => {
@@ -320,6 +377,31 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
     });
 
     let indexDifference =  xData.length - macdResults.length; 
+
+    for (let index = 0; index < xData.length; index++) {
+      if (index >= indexDifference)
+      {
+        result.x.push(xData[index]);
+      }
+    }
+
+    return result;
+  }
+
+  private addCCI(
+    input: CCIInput,
+    xData: undefined[]
+    ) : CCIResult
+  {
+    let result = new CCIResult();
+    let cci1 = new CCI(input);
+    var cciResults = cci1.getResult();
+
+    cciResults.forEach(cciResult => {
+      result.y.push(cciResult)
+    });
+
+    let indexDifference =  xData.length - cciResults.length; 
 
     for (let index = 0; index < xData.length; index++) {
       if (index >= indexDifference)
