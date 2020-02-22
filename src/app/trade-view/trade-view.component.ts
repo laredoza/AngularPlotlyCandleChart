@@ -11,6 +11,7 @@ import { PlotlyModule } from "angular-plotly.js";
 import { EMA, MACD } from "technicalindicators";
 import { EmaResult } from "./models/ema-result";
 import { MACDInput } from 'technicalindicators/declarations/moving_averages/MACD';
+import { MACDResult } from './models/macd-result';
 @Component({
   selector: "app-trade-view",
   templateUrl: "./trade-view.component.html",
@@ -66,12 +67,35 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         type: "lines",
         name: "200",
         xaxis: "x",
+        showlegend: "False"
       },
       {
         x: [],
         y: [],
+        legendgroup: 'MACD',
+        showlegend: true,
         type: "lines",
+        name: "MACD",
+        xaxis: "x",
+        yaxis: "y2"
+      },
+      {
+        x: [],
+        y: [],
+        legendgroup: 'MACD',
+        showlegend: false,
+        type: "bar",
         name: "Hist",
+        xaxis: "x",
+        yaxis: "y2"
+      },
+      {
+        x: [],
+        y: [],
+        legendgroup: 'MACD',
+        showlegend: false,
+        type: "lines",
+        name: "Signal",
         xaxis: "x",
         yaxis: "y2"
       }
@@ -94,6 +118,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         l: 60
       },
       showlegend: true,
+      legend: {"orientation": "h"},
       xaxis: {
         autorange: true,
         title: "Date",
@@ -237,8 +262,8 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
     this.candleGraph.data[3].x = ema200Result.x;
     this.candleGraph.data[3].y = ema200Result.y;
 
-    this.addMACDChart({
-      values: this.candleGraph.data[0].y,
+    let macdResult = this.addMACDChart({
+      values: this.candleGraph.data[0].close,
       fastPeriod: 5,
       slowPeriod: 8,
       signalPeriod: 3,
@@ -246,6 +271,15 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
       SimpleMASignal: false
     },
     this.candleGraph.data[0].x)
+
+    this.candleGraph.data[4].x = macdResult.x;
+    this.candleGraph.data[4].y = macdResult.MACD;
+
+    this.candleGraph.data[5].x = macdResult.x;
+    this.candleGraph.data[5].y = macdResult.histogram;
+
+    this.candleGraph.data[6].x = macdResult.x;
+    this.candleGraph.data[6].y = macdResult.signal;
   }
 
   private addEmaChart(
@@ -272,11 +306,29 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
   private addMACDChart(
     settings: MACDInput,
     xData: undefined[]
-  )
+  ) : MACDResult
   {
-    var macd = new MACD(settings);
-    var result = macd.getResult();
+    let result = new MACDResult();
 
+    var macd = new MACD(settings);
+    var macdResults = macd.getResult();
+
+    macdResults.forEach(macdResult => {
+      result.MACD.push(macdResult.MACD);
+      result.histogram.push(macdResult.histogram);
+      result.signal.push(macdResult.signal);
+    });
+
+    let indexDifference =  xData.length - macdResults.length; 
+
+    for (let index = 0; index < xData.length; index++) {
+      if (index >= indexDifference)
+      {
+        result.x.push(xData[index]);
+      }
+    }
+
+    return result;
   }
 
   public onClick(data) {
