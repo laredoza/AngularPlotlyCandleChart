@@ -10,6 +10,7 @@ import * as moment from "moment";
 import { PlotlyModule } from "angular-plotly.js";
 import { EMA, MACD } from "technicalindicators";
 import { EmaResult } from "./models/ema-result";
+import { MACDInput } from 'technicalindicators/declarations/moving_averages/MACD';
 @Component({
   selector: "app-trade-view",
   templateUrl: "./trade-view.component.html",
@@ -63,7 +64,14 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         x: [],
         y: [],
         type: "lines",
-        name: "New",
+        name: "200",
+        xaxis: "x",
+      },
+      {
+        x: [],
+        y: [],
+        type: "lines",
+        name: "Hist",
         xaxis: "x",
         yaxis: "y2"
       }
@@ -189,8 +197,6 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
       )
       .toPromise();
 
-    var index = 1;
-
     results.forEach(data => {
       let date = moment
         .unix(data.date)
@@ -231,37 +237,15 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
     this.candleGraph.data[3].x = ema200Result.x;
     this.candleGraph.data[3].y = ema200Result.y;
 
-    var macd = new MACD({
-      values: [
-        127.75,
-        129.02,
-        132.75,
-        145.4,
-        148.98,
-        137.52,
-        147.38,
-        139.05,
-        137.23,
-        149.3,
-        162.45,
-        178.95,
-        200.35,
-        221.9,
-        243.23,
-        243.52,
-        286.42,
-        280.27
-      ],
+    this.addMACDChart({
+      values: this.candleGraph.data[0].y,
       fastPeriod: 5,
       slowPeriod: 8,
       signalPeriod: 3,
       SimpleMAOscillator: false,
       SimpleMASignal: false
-    });
-
-    var result = macd.getResult();
-    var a = "";
-
+    },
+    this.candleGraph.data[0].x)
   }
 
   private addEmaChart(
@@ -270,23 +254,29 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
     yData: undefined[]
   ): EmaResult {
     let result = new EmaResult();
-    let ema100Y = [];
+    let emaX = [];
 
     var ema = new EMA({ period: period, values: yData });
     let emaResult = ema.getResult();
 
-    for (let index = 0; index < 99; index++) {
-      ema100Y.push(0);
+    for (let index = period; index < xData.length; index++) {
+      emaX.push(xData[index]);
     }
 
-    for (let index = 0; index < emaResult.length; index++) {
-      ema100Y.push(emaResult[index]);
-    }
-
-    result.x = xData;
-    result.y = ema100Y;
+    result.x = emaX;
+    result.y = emaResult;
 
     return result;
+  }
+
+  private addMACDChart(
+    settings: MACDInput,
+    xData: undefined[]
+  )
+  {
+    var macd = new MACD(settings);
+    var result = macd.getResult();
+
   }
 
   public onClick(data) {
