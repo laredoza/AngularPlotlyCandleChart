@@ -24,6 +24,7 @@
     "moment": "^2.24.0",
     "plotly.js": "^1.52.2",
     "rxjs": "~6.4.0",
+    "technicalindicators": "^3.0.0",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"
   },
