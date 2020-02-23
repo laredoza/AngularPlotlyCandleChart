@@ -247,12 +247,12 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         linecolor: "#787878",
         gridcolor: "#363c4e",
         titlefont: {
-          family: "Arial, sans-serif",
+          // family: "Arial, sans-serif",
           size: 18,
           color: "#cccdcd"
         },
         tickfont: {
-          family: "Old Standard TT, serif",
+          // family: "Old Standard TT, serif",
           size: 14,
           color: "#cccdcd"
         }
@@ -271,7 +271,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
           color: "#cccdcd"
         },
         tickfont: {
-          family: "Old Standard TT, serif",
+          // family: "Old Standard TT, serif",
           size: 14,
           color: "#cccdcd"
         }
@@ -287,10 +287,11 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
           color: "#cccdcd"
         },
         tickfont: {
-          family: "Old Standard TT, serif",
+          // family: "Old Standard TT, serif",
           size: 14,
           color: "#cccdcd"
-        }
+        },
+        title:"MACD"
       },
       yaxis3: {
         domain: [0.1, 0.35],
@@ -303,10 +304,11 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
           color: "#cccdcd"
         },
         tickfont: {
-          family: "Old Standard TT, serif",
+          // family: "Old Standard TT, serif",
           size: 14,
           color: "#cccdcd"
-        }
+        },
+        title:"CCI"
       },
       yaxis4: {
         domain: [0, 0.1],
@@ -319,7 +321,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
           color: "#cccdcd"
         },
         tickfont: {
-          family: "Old Standard TT, serif",
+          // family: "Old Standard TT, serif",
           size: 14,
           color: "#cccdcd"
         }
@@ -387,6 +389,11 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
   constructor(private service: TradeViewService) {}
 
   async ngOnInit() {
+    await this.loadData();
+  }
+
+  private async loadData()
+  {
     let results = await this.service
       .returnTrades(
         this.startDate.utc().unix(),
@@ -396,6 +403,8 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
       .toPromise();
 
     let volume = [];
+    this.volumeColors = [];
+    this.macdColours = [];
 
     let previousVolume = 0;
 
@@ -409,6 +418,8 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
       this.candleGraph.data[0].high.push(data.high);
       this.candleGraph.data[0].low.push(data.low);
       this.candleGraph.data[0].open.push(data.open);
+
+      // Artificially lowering amounts
       volume.push(data.volume / 4000);
 
       if (previousVolume > data.volume) {
@@ -420,7 +431,81 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
       previousVolume = data.volume;
     });
 
-    let ema50Result = this.addEmaChart(
+    this.addEmaCharts();
+    this.addMacdCharts();
+    this.addCciCharts();
+
+    this.candleGraph.data[8].x = this.candleGraph.data[0].x;
+    this.candleGraph.data[8].y = volume;
+  }
+
+  private generateEmaChartData(
+    period: number,
+    xData: undefined[],
+    yData: undefined[]
+  ): EmaResult {
+    let result = new EmaResult();
+    let emaX = [];
+
+    var ema = new EMA({ period: period, values: yData });
+    let emaResult = ema.getResult();
+
+    for (let index = period; index < xData.length; index++) {
+      emaX.push(xData[index]);
+    }
+
+    result.x = emaX;
+    result.y = emaResult;
+
+    return result;
+  }
+
+  private generateMACDChartData(input: MACDInput, xData: undefined[]): MACDResult {
+    let result = new MACDResult();
+
+    var macd = new MACD(input);
+    var macdResults = macd.getResult();
+
+    macdResults.forEach(macdResult => {
+      result.MACD.push(macdResult.MACD);
+      result.histogram.push(macdResult.histogram);
+      result.signal.push(macdResult.signal);
+    });
+
+    let indexDifference = xData.length - macdResults.length;
+
+    for (let index = 0; index < xData.length; index++) {
+      if (index >= indexDifference) {
+        result.x.push(xData[index]);
+      }
+    }
+
+    return result;
+  }
+
+  private generateCciChartData(input: CCIInput, xData: undefined[]): CCIResult {
+    let result = new CCIResult();
+    let cci1 = new CCI(input);
+    var cciResults = cci1.getResult();
+
+    cciResults.forEach(cciResult => {
+      result.y.push(cciResult);
+    });
+
+    let indexDifference = xData.length - cciResults.length;
+
+    for (let index = 0; index < xData.length; index++) {
+      if (index >= indexDifference) {
+        result.x.push(xData[index]);
+      }
+    }
+
+    return result;
+  }
+
+  private addEmaCharts()
+  {
+    let ema50Result = this.generateEmaChartData(
       50,
       this.candleGraph.data[0].x,
       this.candleGraph.data[0].close
@@ -429,7 +514,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
     this.candleGraph.data[1].x = ema50Result.x;
     this.candleGraph.data[1].y = ema50Result.y;
 
-    let ema100Result = this.addEmaChart(
+    let ema100Result = this.generateEmaChartData(
       100,
       this.candleGraph.data[0].x,
       this.candleGraph.data[0].close
@@ -438,7 +523,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
     this.candleGraph.data[2].x = ema100Result.x;
     this.candleGraph.data[2].y = ema100Result.y;
 
-    let ema200Result = this.addEmaChart(
+    let ema200Result = this.generateEmaChartData(
       200,
       this.candleGraph.data[0].x,
       this.candleGraph.data[0].close
@@ -446,8 +531,11 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
 
     this.candleGraph.data[3].x = ema200Result.x;
     this.candleGraph.data[3].y = ema200Result.y;
+  }
 
-    let macdResult = this.addMACDChart(
+  private addMacdCharts()
+  {
+    let macdResult = this.generateMACDChartData(
       {
         values: this.candleGraph.data[0].close,
         fastPeriod: 12,
@@ -475,8 +563,11 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         this.macdColours.push("#26a69a");
       }
     });
+  }
 
-    let cciResult = this.addCCI(
+  private addCciCharts()
+  {
+    let cciResult = this.generateCciChartData(
       {
         high: this.candleGraph.data[0].high,
         low: this.candleGraph.data[0].low,
@@ -488,73 +579,6 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
 
     this.candleGraph.data[7].x = cciResult.x;
     this.candleGraph.data[7].y = cciResult.y;
-
-    this.candleGraph.data[8].x = this.candleGraph.data[0].x;
-    this.candleGraph.data[8].y = volume;
-  }
-
-  private addEmaChart(
-    period: number,
-    xData: undefined[],
-    yData: undefined[]
-  ): EmaResult {
-    let result = new EmaResult();
-    let emaX = [];
-
-    var ema = new EMA({ period: period, values: yData });
-    let emaResult = ema.getResult();
-
-    for (let index = period; index < xData.length; index++) {
-      emaX.push(xData[index]);
-    }
-
-    result.x = emaX;
-    result.y = emaResult;
-
-    return result;
-  }
-
-  private addMACDChart(input: MACDInput, xData: undefined[]): MACDResult {
-    let result = new MACDResult();
-
-    var macd = new MACD(input);
-    var macdResults = macd.getResult();
-
-    macdResults.forEach(macdResult => {
-      result.MACD.push(macdResult.MACD);
-      result.histogram.push(macdResult.histogram);
-      result.signal.push(macdResult.signal);
-    });
-
-    let indexDifference = xData.length - macdResults.length;
-
-    for (let index = 0; index < xData.length; index++) {
-      if (index >= indexDifference) {
-        result.x.push(xData[index]);
-      }
-    }
-
-    return result;
-  }
-
-  private addCCI(input: CCIInput, xData: undefined[]): CCIResult {
-    let result = new CCIResult();
-    let cci1 = new CCI(input);
-    var cciResults = cci1.getResult();
-
-    cciResults.forEach(cciResult => {
-      result.y.push(cciResult);
-    });
-
-    let indexDifference = xData.length - cciResults.length;
-
-    for (let index = 0; index < xData.length; index++) {
-      if (index >= indexDifference) {
-        result.x.push(xData[index]);
-      }
-    }
-
-    return result;
   }
 
   public onClick(data) {
