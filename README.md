@@ -1,6 +1,6 @@
 # Angular Plotly Candle Chart
 
-An example project to display Stock / Crypto candle chart ( Plotly ) with Angular 8. The chart gets it data from Poloniex
+A sandbox project to display Stock / Crypto candle chart ( Plotly ) with Angular 8. Currently the chart displays a candle chart, MACD & CCI chart. The chart gets it data from Poloniex
 
 # Links
 - [Angular Plotly](https://github.com/plotly/angular-plotly.js/blob/master/README.md)
