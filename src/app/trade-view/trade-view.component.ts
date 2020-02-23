@@ -274,7 +274,8 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
           // family: "Old Standard TT, serif",
           size: 14,
           color: "#cccdcd"
-        }
+        },
+        title:"Candle"
       },
       yaxis2: {
         domain: [0.35, 0.55],
