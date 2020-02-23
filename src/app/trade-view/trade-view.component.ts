@@ -254,7 +254,12 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
           // family: "Old Standard TT, serif",
           size: 14,
           color: "#cccdcd"
-        }
+        },
+        showspikes:true,
+        spikemode:"across",
+        spikedash:"dash",
+        spikecolor:"#787878",
+        spikethickness: 1
       },
       yaxis: {
         autorange: true,
@@ -274,7 +279,12 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
           size: 14,
           color: "#cccdcd"
         },
-        title:"Candle"
+        title:"Candle",
+        showspikes:true,
+        spikemode:"across",
+        spikedash:"dash",
+        spikecolor:"#787878",
+        spikethickness: 1
       },
       yaxis2: {
         domain: [0.35, 0.55],
@@ -291,7 +301,12 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
           size: 14,
           color: "#cccdcd"
         },
-        title:"MACD"
+        title:"MACD",
+        showspikes:true,
+        spikemode:"across",
+        spikedash:"dash",
+        spikecolor:"#787878",
+        spikethickness: 1
       },
       yaxis3: {
         domain: [0.1, 0.35],
@@ -308,7 +323,12 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
           size: 14,
           color: "#cccdcd"
         },
-        title:"CCI"
+        title:"CCI",
+        showspikes:true,
+        spikemode:"across",
+        spikedash:"dash",
+        spikecolor:"#787878",
+        spikethickness: 1
       },
       yaxis4: {
         domain: [0, 0.1],
@@ -572,7 +592,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         high: this.candleGraph.data[0].high,
         low: this.candleGraph.data[0].low,
         close: this.candleGraph.data[0].close,
-        period: 21
+        period: 20
       },
       this.candleGraph.data[0].x
     );
