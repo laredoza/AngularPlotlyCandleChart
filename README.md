@@ -7,3 +7,4 @@ A sandbox project to display Stock / Crypto candle chart ( Plotly ) with Angular
 # Links
 - [Angular Plotly](https://github.com/plotly/angular-plotly.js/blob/master/README.md)
 - [Plotly](https://plot.ly/javascript/)
+-[TechnicalIndicators](https://www.npmjs.com/package/technicalindicators)
