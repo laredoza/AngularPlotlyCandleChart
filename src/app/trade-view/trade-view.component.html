@@ -1,7 +1,7 @@
 <plotly-plot 
-    [data]="candleGraph.data" 
-    [layout]="candleGraph.layout" 
-    [config]="candleGraph.config" 
+    [data]="chartSettings.data" 
+    [layout]="chartSettings.layout" 
+    [config]="chartSettings.config" 
     (buttonClicked)="onClick(data)" 
     #chart 
     [useResizeHandler]="true" 

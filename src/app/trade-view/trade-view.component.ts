@@ -35,19 +35,19 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
   volumeColors = [];
   macdColours = [];
 
-  public candleGraph = TradeViewSettings.settings;
+  public chartSettings = TradeViewSettings.settings;
 
   constructor(private service: TradeViewService) {}
 
   async ngOnInit() {
-    this.candleGraph.layout.xaxis.range = [this.startDate.utc().format("YYYY-MM-DD HH:mm:ss"),
+    this.chartSettings.layout.xaxis.range = [this.startDate.utc().format("YYYY-MM-DD HH:mm:ss"),
           this.endDate.utc().format("YYYY-MM-DD HH:mm:ss")];
-    this.candleGraph.layout.xaxis.rangeslider.range = [
+    this.chartSettings.layout.xaxis.rangeslider.range = [
             this.startDate.utc().format("YYYY-MM-DD HH:mm:ss"),
             this.endDate.utc().format("YYYY-MM-DD HH:mm:ss")
           ];
-    this.candleGraph.layout.shapes[0].x0 = this.startDate.utc().format("YYYY-MM-DD HH:mm:ss");
-    this.candleGraph.layout.shapes[0].x1 = this.endDate.utc().format("YYYY-MM-DD HH:mm:ss");
+    this.chartSettings.layout.shapes[0].x0 = this.startDate.utc().format("YYYY-MM-DD HH:mm:ss");
+    this.chartSettings.layout.shapes[0].x1 = this.endDate.utc().format("YYYY-MM-DD HH:mm:ss");
 
     await this.loadData();
   }
@@ -63,8 +63,8 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
       .toPromise();
 
     let volume = [];
-    // this.volumeColors = [];
-    // this.macdColours = [];
+    this.volumeColors = [];
+    this.macdColours = [];
 
     let previousVolume = 0;
 
@@ -73,11 +73,11 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         .unix(data.date)
         .utc()
         .format("YYYY-MM-DD HH:mm:ss");
-      this.candleGraph.data[0].x.push(date);
-      this.candleGraph.data[0].close.push(data.close);
-      this.candleGraph.data[0].high.push(data.high);
-      this.candleGraph.data[0].low.push(data.low);
-      this.candleGraph.data[0].open.push(data.open);
+      this.chartSettings.data[0].x.push(date);
+      this.chartSettings.data[0].close.push(data.close);
+      this.chartSettings.data[0].high.push(data.high);
+      this.chartSettings.data[0].low.push(data.low);
+      this.chartSettings.data[0].open.push(data.open);
 
       // Artificially lowering amounts
       volume.push(data.volume / 4000);
@@ -95,9 +95,9 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
     this.addMacdCharts();
     this.addCciCharts();
 
-    this.candleGraph.data[8].x = this.candleGraph.data[0].x;
-    this.candleGraph.data[8].y = volume;
-    this.candleGraph.data[8].marker.color = this.volumeColors;
+    this.chartSettings.data[8].x = this.chartSettings.data[0].x;
+    this.chartSettings.data[8].y = volume;
+    this.chartSettings.data[8].marker.color = this.volumeColors;
 
   }
 
@@ -169,55 +169,55 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
   {
     let ema50Result = this.generateEmaChartData(
       50,
-      this.candleGraph.data[0].x,
-      this.candleGraph.data[0].close
+      this.chartSettings.data[0].x,
+      this.chartSettings.data[0].close
     );
 
-    this.candleGraph.data[1].x = ema50Result.x;
-    this.candleGraph.data[1].y = ema50Result.y;
+    this.chartSettings.data[1].x = ema50Result.x;
+    this.chartSettings.data[1].y = ema50Result.y;
 
     let ema100Result = this.generateEmaChartData(
       100,
-      this.candleGraph.data[0].x,
-      this.candleGraph.data[0].close
+      this.chartSettings.data[0].x,
+      this.chartSettings.data[0].close
     );
 
-    this.candleGraph.data[2].x = ema100Result.x;
-    this.candleGraph.data[2].y = ema100Result.y;
+    this.chartSettings.data[2].x = ema100Result.x;
+    this.chartSettings.data[2].y = ema100Result.y;
 
     let ema200Result = this.generateEmaChartData(
       200,
-      this.candleGraph.data[0].x,
-      this.candleGraph.data[0].close
+      this.chartSettings.data[0].x,
+      this.chartSettings.data[0].close
     );
 
-    this.candleGraph.data[3].x = ema200Result.x;
-    this.candleGraph.data[3].y = ema200Result.y;
+    this.chartSettings.data[3].x = ema200Result.x;
+    this.chartSettings.data[3].y = ema200Result.y;
   }
 
   private addMacdCharts()
   {
     let macdResult = this.generateMACDChartData(
       {
-        values: this.candleGraph.data[0].close,
+        values: this.chartSettings.data[0].close,
         fastPeriod: 12,
         slowPeriod: 26,
         signalPeriod: 9,
         SimpleMAOscillator: false,
         SimpleMASignal: false
       },
-      this.candleGraph.data[0].x
+      this.chartSettings.data[0].x
     );
 
-    this.candleGraph.data[4].x = macdResult.x;
-    this.candleGraph.data[4].y = macdResult.MACD;
+    this.chartSettings.data[4].x = macdResult.x;
+    this.chartSettings.data[4].y = macdResult.MACD;
 
-    this.candleGraph.data[5].x = macdResult.x;
-    this.candleGraph.data[5].y = macdResult.histogram;
-    this.candleGraph.data[5].marker.color = this.macdColours;
+    this.chartSettings.data[5].x = macdResult.x;
+    this.chartSettings.data[5].y = macdResult.histogram;
+    this.chartSettings.data[5].marker.color = this.macdColours;
 
-    this.candleGraph.data[6].x = macdResult.x;
-    this.candleGraph.data[6].y = macdResult.signal;
+    this.chartSettings.data[6].x = macdResult.x;
+    this.chartSettings.data[6].y = macdResult.signal;
 
     macdResult.histogram.forEach(histogram => {
       if (!histogram || histogram < 0) {
@@ -232,16 +232,16 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
   {
     let cciResult = this.generateCciChartData(
       {
-        high: this.candleGraph.data[0].high,
-        low: this.candleGraph.data[0].low,
-        close: this.candleGraph.data[0].close,
+        high: this.chartSettings.data[0].high,
+        low: this.chartSettings.data[0].low,
+        close: this.chartSettings.data[0].close,
         period: 20
       },
-      this.candleGraph.data[0].x
+      this.chartSettings.data[0].x
     );
 
-    this.candleGraph.data[7].x = cciResult.x;
-    this.candleGraph.data[7].y = cciResult.y;
+    this.chartSettings.data[7].x = cciResult.x;
+    this.chartSettings.data[7].y = cciResult.y;
   }
 
   public onClick(data) {
