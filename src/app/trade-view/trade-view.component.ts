@@ -29,7 +29,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
     // PlotlyModule.plotlyjs.layout.template1 = 'plotly_dark';
   }
 
-  startDate = moment("2019-01-01", "YYYY-MM-DD HH:mm:ss");
+  startDate = moment("2018-06-01", "YYYY-MM-DD HH:mm:ss");
   endDate = moment("2020-03-01", "YYYY-MM-DD HH:mm:ss");
   volumeColors = [];
   macdColours = [];
@@ -37,7 +37,8 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
   public candleGraph = {
     config: {
       scrollZoom: true,
-      responsive: true
+      responsive: true,
+      displayModeBar: false
     },
     data: [
       {
@@ -60,7 +61,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         type: "lines",
         name: "50",
         line: {
-          color: "#07570d",
+          color: "#07570d"
           // width: 1
         }
       },
@@ -70,7 +71,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         type: "lines",
         name: "100",
         line: {
-          color: "#080aa0",
+          color: "#080aa0"
           // width: 1
         }
       },
@@ -81,7 +82,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         name: "200",
         xaxis: "x",
         line: {
-          color: "#ad080c",
+          color: "#ad080c"
           // width: 1
         }
       },
@@ -95,7 +96,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         xaxis: "x",
         yaxis: "y2",
         line: {
-          color: "#0576c9",
+          color: "#0576c9"
           // width: 1
         }
       },
@@ -125,7 +126,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         xaxis: "x",
         yaxis: "y2",
         line: {
-          color: "#e26004",
+          color: "#e26004"
           // width: 1
         }
       },
@@ -139,30 +140,9 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         xaxis: "x",
         yaxis: "y3",
         line: {
-          color: "#815b17",
+          color: "#815b17"
           // width: 1
         }
-
-      },
-      {
-        x: [],
-        y: [],
-        legendgroup: "CCI",
-        showlegend: false,
-        type: "lines",
-        name: "CCI100",
-        xaxis: "x",
-        yaxis: "y3"
-      },
-      {
-        x: [],
-        y: [],
-        legendgroup: "CCI",
-        showlegend: false,
-        type: "lines",
-        name: "CCI-100",
-        xaxis: "x",
-        yaxis: "y3"
       },
       {
         x: [],
@@ -192,12 +172,12 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
       // width: 1800,
       // height: 900,
       dragmode: "pan",
-      margin: {
-        r: 10,
-        t: 0,
-        b: 40,
-        l: 60
-      },
+      // margin: {
+      //   r: 10,
+      //   t: 0,
+      //   b: 40,
+      //   l: 60
+      // },
       showlegend: true,
       legend: {
         orientation: "h",
@@ -216,7 +196,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         title: "Date",
         rangeselector: {
           x: 0,
-          y: 1.2,
+          y: 1.1,
           xanchor: "left",
           font: { size: 8 },
           buttons: [
@@ -345,32 +325,59 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         }
       },
       annotations: [
-        {
-          x: "2019-06-27",
-          y: 0.9,
-          xref: "x",
-          yref: "paper",
-          text: "largest movement",
-          font: { color: "magenta" },
-          showarrow: true,
-          xanchor: "right",
-          ax: -20,
-          ay: 0
-        }
+        // {
+        //   x: "2019-06-27",
+        //   y: 0.9,
+        //   xref: "x",
+        //   yref: "paper",
+        //   text: "largest movement",
+        //   font: { color: "magenta" },
+        //   showarrow: true,
+        //   xanchor: "right",
+        //   ax: -20,
+        //   ay: 0
+        // }
       ],
       shapes: [
+        // {
+        //   type: "rect",
+        //   xref: "x",
+        //   yref: "paper",
+        //   x0: "2019-06-12",
+        //   y0: 0,
+        //   x1: "2019-06-27",
+        //   y1: 1,
+        //   fillcolor: "#d3d3d3",
+        //   opacity: 0.2,
+        //   line: {
+        //     width: 0
+        //   }
+        // },
         {
           type: "rect",
           xref: "x",
-          yref: "paper",
-          x0: "2019-06-12",
-          y0: 0,
-          x1: "2019-06-27",
-          y1: 1,
-          fillcolor: "#d3d3d3",
+          yref: "y3",
+          x0: this.startDate.utc().format("YYYY-MM-DD HH:mm:ss"),
+          y0: 100,
+          x1: this.endDate.utc().format("YYYY-MM-DD HH:mm:ss"),
+          y1: -100,
+          fillcolor: "#815b17",
           opacity: 0.2,
+          yaxis: "y3",
           line: {
             width: 0
+          }
+        },
+        {
+          type: "line",
+          x0: "2019-06-26",
+          y0: 14000,
+          x1: "2019-08-6",
+          y1: 12300,
+          line: {
+            color: "rgb(50, 171, 96)",
+            width: 4,
+            dash: "dashdot"
           }
         }
       ]
@@ -443,9 +450,9 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
     let macdResult = this.addMACDChart(
       {
         values: this.candleGraph.data[0].close,
-        fastPeriod: 5,
-        slowPeriod: 8,
-        signalPeriod: 3,
+        fastPeriod: 12,
+        slowPeriod: 26,
+        signalPeriod: 9,
         SimpleMAOscillator: false,
         SimpleMASignal: false
       },
@@ -482,20 +489,8 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
     this.candleGraph.data[7].x = cciResult.x;
     this.candleGraph.data[7].y = cciResult.y;
 
-    this.candleGraph.data[8].x = [
-      this.candleGraph.data[0].x[0],
-      this.candleGraph.data[0].x[this.candleGraph.data[0].x.length - 1]
-    ];
-    this.candleGraph.data[8].y = [100, 100];
-
-    this.candleGraph.data[9].x = [
-      this.candleGraph.data[0].x[0],
-      this.candleGraph.data[0].x[this.candleGraph.data[0].x.length - 1]
-    ];
-    this.candleGraph.data[9].y = [-100, -100];
-
-    this.candleGraph.data[10].x = this.candleGraph.data[0].x;
-    this.candleGraph.data[10].y = volume;
+    this.candleGraph.data[8].x = this.candleGraph.data[0].x;
+    this.candleGraph.data[8].y = volume;
   }
 
   private addEmaChart(
