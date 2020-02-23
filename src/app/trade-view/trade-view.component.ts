@@ -112,7 +112,6 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         mode: "markers",
         marker: {
           color: this.macdColours,
-          // symbol: symbolForThresholds,
           size: 5
         }
       },
@@ -404,8 +403,8 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
       .toPromise();
 
     let volume = [];
-    this.volumeColors = [];
-    this.macdColours = [];
+    // this.volumeColors = [];
+    // this.macdColours = [];
 
     let previousVolume = 0;
 
