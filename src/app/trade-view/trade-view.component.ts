@@ -32,6 +32,7 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
   startDate = moment("2019-01-01", "YYYY-MM-DD HH:mm:ss");
   endDate = moment("2020-03-01", "YYYY-MM-DD HH:mm:ss");
   volumeColors = [];
+  macdColours = [];
 
   public candleGraph = {
     config: {
@@ -92,7 +93,11 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         type: "lines",
         name: "MACD",
         xaxis: "x",
-        yaxis: "y2"
+        yaxis: "y2",
+        line: {
+          color: "#0576c9",
+          // width: 1
+        }
       },
       {
         x: [],
@@ -102,7 +107,13 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         type: "bar",
         name: "Hist",
         xaxis: "x",
-        yaxis: "y2"
+        yaxis: "y2",
+        mode: "markers",
+        marker: {
+          color: this.macdColours,
+          // symbol: symbolForThresholds,
+          size: 5
+        }
       },
       {
         x: [],
@@ -112,7 +123,11 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         type: "lines",
         name: "Signal",
         xaxis: "x",
-        yaxis: "y2"
+        yaxis: "y2",
+        line: {
+          color: "#e26004",
+          // width: 1
+        }
       },
       {
         x: [],
@@ -122,7 +137,12 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         type: "lines",
         name: "CCI",
         xaxis: "x",
-        yaxis: "y3"
+        yaxis: "y3",
+        line: {
+          color: "#815b17",
+          // width: 1
+        }
+
       },
       {
         x: [],
@@ -151,7 +171,6 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
         type: "bar",
         name: "Volume",
         xaxis: "x",
-        // yaxis: "y4"
         mode: "markers",
         marker: {
           color: this.volumeColors,
@@ -164,9 +183,9 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
       plot_bgcolor: "#131722",
       paper_bgcolor: "#131722",
       grid: {
-        rows: 4,
+        rows: 3,
         columns: 1,
-        subplots: [["xy"], ["xy2"], ["xy3"], ["xy4"]],
+        subplots: [["xy"], ["xy2"], ["xy3"]],
         roworder: "top to bottom"
       },
       autosize: true,
@@ -441,6 +460,14 @@ export class TradeViewComponent implements OnInit, AfterViewInit {
 
     this.candleGraph.data[6].x = macdResult.x;
     this.candleGraph.data[6].y = macdResult.signal;
+
+    macdResult.histogram.forEach(histogram => {
+      if (!histogram || histogram < 0) {
+        this.macdColours.push("#ef5350");
+      } else {
+        this.macdColours.push("#26a69a");
+      }
+    });
 
     let cciResult = this.addCCI(
       {

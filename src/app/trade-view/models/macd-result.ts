@@ -1,5 +1,5 @@
 export class MACDResult {
-    histogram: undefined[] = [];
+    histogram = [];
     MACD: undefined[] = [];
     x : undefined[] = [];
     signal: undefined[] = [];
