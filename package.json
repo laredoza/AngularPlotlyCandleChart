@@ -21,7 +21,7 @@
     "@angular/router": "~8.2.14",
     "@types/plotly.js": "^1.44.27",
     "angular-plotly.js": "^1.5.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "plotly.js": "^1.52.2",
     "rxjs": "~6.4.0",
     "technicalindicators": "^3.0.0",
